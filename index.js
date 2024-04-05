@@ -4,8 +4,13 @@ const cors = require("cors");
 const crypto = require("crypto");
 require("dotenv").config();
 
+//userlist = [{username: test1, id: 123}, {username: test2, id:1234}]
 let userList = [];
 
+//exercisesList = {
+//                  id1: [{desc: xxx, dur: xxx, date: xxx},{desc: xxx, dur: xxx, date: xxx}],
+//                  id2: [{desc: xxx, dur: xxx, date: xxx}]
+//                }
 let exercisesList = {};
 
 function createUserId() {
