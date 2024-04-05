@@ -6,6 +6,8 @@ require("dotenv").config();
 
 let userList = [];
 
+let exercisesList = {};
+
 function createUserId() {
   let uuid = crypto.randomUUID();
 
@@ -17,6 +19,9 @@ function createUserId() {
   return uuid;
 }
 
+function getUsername(id) {
+  const user = userList.find((user) => user._id === id);
+  return user ? user.username : null;
 }
 
 app.use(express.json());
@@ -38,6 +43,40 @@ app.post("/api/users", (req, res) => {
 
 app.get("/api/users", (req, res) => {
   res.json(userList);
+});
+
+app.post("/api/users/:_id/exercises", (req, res) => {
+  const id = req.params._id;
+  let user = getUsername(id);
+
+  if (user === null) {
+    console.log("error: user %s doesn't exist", req.params._id);
+  }
+
+  const date =
+    req.body.date === undefined || req.body.date === ""
+      ? new Date().toDateString()
+      : new Date(req.body.date).toDateString();
+
+  const exercises = {
+    description: req.body.description,
+    duration: req.body.duration,
+    date: new Date(date).toDateString(),
+  };
+
+  if (Object.hasOwn(exercisesList, id)) {
+    exercisesList[id].push(exercises);
+  } else {
+    exercisesList[id] = [exercises];
+  }
+
+  res.json({
+    _id: id,
+    username: user,
+    description: exercises.description,
+    duration: Number(exercises.duration),
+    date: exercises.date,
+  });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
