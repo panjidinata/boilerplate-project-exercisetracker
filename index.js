@@ -1,27 +1,22 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const crypto = require("crypto");
 require("dotenv").config();
 
 let userList = [];
 
-// this function will create new uuid then check for uuid duplicate
-// if there are duplicate repeat the function
-// if there is none return the uuid.
 function createUserId() {
   let uuid = crypto.randomUUID();
 
-  if (userList.length <= 0) {
-    return uuid;
+  // check for uuid duplicate and generate new uuid if exist
+  while (userList.some((user) => user._id === uuid)) {
+    uuid = crypto.randomUUID();
   }
 
-  for (let i = 0; i < userList.length; i++) {
-    if (userList[i]["_id"] === uuid) {
-      createUserId();
-    }
+  return uuid;
+}
 
-    return uuid;
-  }
 }
 
 app.use(express.json());
