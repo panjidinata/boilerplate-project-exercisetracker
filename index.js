@@ -52,20 +52,20 @@ app.get("/api/users", (req, res) => {
 
 app.post("/api/users/:_id/exercises", (req, res) => {
   const id = req.params._id;
-  let user = getUsername(id);
+  let username = getUsername(id);
 
-  if (user === null) {
+  if (username === null) {
     console.log("error: user %s doesn't exist", req.params._id);
   }
 
   const date =
     req.body.date === undefined || req.body.date === ""
       ? new Date().toDateString()
-      : new Date(req.body.date).toDateString();
+      : new Date(req.body.date.toString()).toDateString();
 
   const exercises = {
     description: req.body.description,
-    duration: req.body.duration,
+    duration: parseInt(req.body.duration),
     date: new Date(date).toDateString(),
   };
 
@@ -77,9 +77,9 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   res.json({
     _id: id,
-    username: user,
+    username: username,
     description: exercises.description,
-    duration: Number(exercises.duration),
+    duration: exercises.duration,
     date: exercises.date,
   });
 });
