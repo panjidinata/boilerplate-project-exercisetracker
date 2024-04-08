@@ -29,6 +29,10 @@ function getUsername(id) {
   return user ? user.username : null;
 }
 
+function getExercises(id) {
+  return new Map(Object.entries(exercisesList)).get(id);
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -81,6 +85,39 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     description: exercises.description,
     duration: exercises.duration,
     date: exercises.date,
+  });
+});
+
+app.get("/api/users/:_id/logs", (req, res) => {
+  const id = req.params._id;
+  const username = getUsername(id);
+  let exercises = getExercises(id);
+  const from =
+    req.query.from === undefined || req.query.from === ""
+      ? undefined
+      : new Date(req.query.from.toString()).getTime();
+  const to =
+    req.query.to === undefined || req.query.to === ""
+      ? undefined
+      : new Date(req.query.to.toString()).getTime();
+  const limit = req.query.limit;
+
+  if (from && to) {
+    exercises = exercises.filter((logs) => {
+      let convertDate = new Date(Date.parse(logs.date)).getTime();
+      return convertDate >= from && convertDate <= to;
+    });
+  }
+
+  if (limit) {
+    exercises = exercises.slice(0, parseInt(limit));
+  }
+
+  res.json({
+    username: username,
+    _id: id,
+    count: exercises.length,
+    log: exercises,
   });
 });
 
